@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 18:14:59 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/18 23:10:49 by jerome           ###   ########.fr       */
+/*   Updated: 2018/03/19 00:19:40 by jerome           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ static void		show_help(void)
 	exit(0);
 }
 
-static void		send_error(t_const_buffer *arg, int match_count, int indexes
-							, const char *l_opt[LONG_OPT_MAX])
+static void		send_l_opt_error(t_const_buffer *arg, int match_count
+								, int indexes, const char *l_opt[LONG_OPT_MAX])
 {
 	int			i;
 
@@ -75,7 +75,7 @@ void			check_long_option(t_env *env, t_const_buffer *arg
 		}
 	}
 	if (match_count != 1)
-		send_error(arg, match_count, matched_indexes, l_opt);
+		send_l_opt_error(arg, match_count, matched_indexes, l_opt);
 	else if (matched_indexes & REVERSE)
 		env->sort_mode |= REVERSE;
 	else
@@ -84,8 +84,25 @@ void			check_long_option(t_env *env, t_const_buffer *arg
 
 void			check_option(t_env *env, t_const_buffer *arg, t_bool *check)
 {
+	static const char		opt_letters[] = OPT_LETTERS;
+	int						i;
+
 	if (arg->buffer[1] == '-')
 		return (check_long_option(env, arg, check));
+
+	while(*(++arg->buffer))
+	{
+		i = -1;
+		while (++i < OPT_MAX && *arg->buffer != opt_letters[i])
+			;
+		if (i == OPT_MAX)
+			ft_error(INVALID_S_OPTION | SHOW_HELP_CMD_FOR_INFO | FATAL_ERROR
+					, arg->buffer);
+		if (i < OPT_FIRST_SORT_LETTER && !(env->filters & (i << i)))
+			env->filters |= (1 << i);
+		else
+			env->sort_mode |= (1 << (i - OPT_FIRST_SORT_LETTER));
+	}
 }
 
 void			parse_arguments(t_env *env, char **args)
@@ -108,8 +125,6 @@ void			parse_arguments(t_env *env, char **args)
 			if (env->file_list)
 				new_file->next = env->file_list;
 			env->file_list = new_file;
-			// printf("%zu", new_file->content_size);
-			// printf(" -- %c\n", *((char*)new_file->content));
 			printf("added: %p\n\tcontent: \"%s\"\n", new_file, (char*)env->file_list->content);
 		}
 		args++;

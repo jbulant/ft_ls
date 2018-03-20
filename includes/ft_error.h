@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 18:24:05 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/18 22:49:13 by jerome           ###   ########.fr       */
+/*   Updated: 2018/03/20 00:50:33 by jerome           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,11 @@
 
 #include <stdio.h>
 
+# include <errno.h>
 # include <stdlib.h>
 # include "libft.h"
 
-# define ERROR0		"-ft_ls: cannot access '%s'\n"
+# define ERROR0		"-ft_ls: cannot access '%s': \n"
 # define ERROR1		"-ft_ls: invalid option --'%c'\n"
 # define ERROR2		"-ft_ls: '%s' is ambiguous; possibilities: \n"
 # define ERROR3		"-ft_ls: unrecognized option '%s'\n"
