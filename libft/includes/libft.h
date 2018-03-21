@@ -6,7 +6,7 @@
 /*   By: jbulant <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/07 16:11:45 by jbulant           #+#    #+#             */
-/*   Updated: 2017/12/13 14:34:45 by jbulant          ###   ########.fr       */
+/*   Updated: 2018/03/20 20:03:04 by jerome           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,10 @@ char					*ft_strnstr(const char *str, const char *to_find,\
 									size_t n);
 int						ft_strcmp(const char *s1, const char *s2);
 int						ft_strncmp(const char *s1, const char *s2, size_t n);
+int						ft_strcmp_case(const char *s1, const char *s2
+									, t_bool sensitive);
+int						ft_strncmp_case(const char *s1, const char *s2
+									, size_t n, t_bool sensitive);
 int						ft_atoi(const char *str);
 t_bool					ft_isalpha(int c);
 t_bool					ft_isdigit(int c);

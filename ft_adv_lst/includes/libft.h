@@ -6,7 +6,7 @@
 /*   By: jbulant <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/07 16:11:45 by jbulant           #+#    #+#             */
-/*   Updated: 2018/03/12 05:44:25 by jbulant          ###   ########.fr       */
+/*   Updated: 2018/03/16 22:10:31 by jbulant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ char					*ft_static_itoa(int nb);
 t_bool					ft_basecheck(char *base);
 int						ft_get_basevalue(char value, char *base, int b_height);
 int						ft_atoi_base(char *str, char *base);
-//char					*ft_itoa_base(int nb, char *base);
+char					*ft_itoa_base(int nb, char *base);
 void					ft_print_byte(const t_byte byte);
 t_byte					ft_swap_byte(const t_byte byte);
 t_byte					ft_hexstr_to_byte(char *str);

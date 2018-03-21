@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 18:14:59 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/19 00:19:40 by jerome           ###   ########.fr       */
+/*   Updated: 2018/03/20 21:17:13 by jerome           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,8 @@ void			parse_arguments(t_env *env, char **args)
 			if (env->file_list)
 				new_file->next = env->file_list;
 			env->file_list = new_file;
-			printf("added: %p\n\tcontent: \"%s\"\n", new_file, (char*)env->file_list->content);
 		}
 		args++;
 	}
+	init_env_functions(env);
 }

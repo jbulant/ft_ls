@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 17:16:24 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/20 00:48:39 by jerome           ###   ########.fr       */
+/*   Updated: 2018/03/20 22:44:30 by jerome           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,33 @@ typedef struct	s_file
 	struct stat 	info;
 }				t_file;
 
+# define MAX_DIR_STACK 128
+
+typedef struct	s_dir_stack
+{
+	struct t_dirent		*files[MAX_DIR_STACK];
+	t_bool				delete_me;
+	size_t				size;
+	struct s_dir_stack	*next;
+}				t_dir_stack;
+
 typedef struct	s_env
 {
+	t_dir_stack	dir_stack;
 	t_list		*file_list;
 	t_ls_filter	filters;
 	t_ls_sort	sort_mode;
+	t_bool		(*sort_cmp_f)();
 }				t_env;
 
+void			init_env(t_env *env);
 void			parse_arguments(t_env *env, char **args);
+void			init_env_functions(t_env *env);
 
+t_bool			scmpf_alpha_reverse(const char *s1
+									, const char *s2
+									, t_bool case_sensitive);
+t_bool			scmpf_alpha(const char *s1
+							, const char *s2
+							, t_bool case_sensitive);
 #endif
