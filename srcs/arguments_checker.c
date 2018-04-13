@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 18:14:59 by jerome            #+#    #+#             */
-/*   Updated: 2018/04/13 04:08:44 by jbulant          ###   ########.fr       */
+/*   Updated: 2018/04/13 20:33:23 by jbulant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,9 @@ int				add_self_to_stack(t_stack *stack)
 
 	if (!(self = ft_memalloc(sizeof(t_file))))
 		return (0);
-	// *(short*)self->name = *(short*)(".");
+	*(short*)self->name = *(short*)(".");
  	// *(short*)self->name = *(short*)("/");
-	ft_strcpy(self->name, "/Users/jbulant/");
+	// ft_strcpy(self->name, "/Users/jbulant/");
 	self->nsize = ft_strlen(self->name);
 	ft_stack_add_content(stack, self);
 	return (1);
