@@ -3,102 +3,112 @@
 #include <limits.h>
 #include <locale.h>
 
-void		read_lst(t_list **lst, void (*del)(void**))
+int file_cmp(t_file *v1, t_file *v2)
 {
-	t_list		*tmp;
-	t_file		*file;
+	t_file *f1, *f2;
+	f1 = (t_file*)v1;
+	f2 = (t_file*)v2;
+	return (ft_strcmp(f1->name, f2->name));
+}
+
+void printinfo(char *name, struct stat *info) {
+	printf("%s :\n", name);
+	printf("S_IFDIR: %#o || %#o\n", S_IFDIR, info->st_mode & S_IFDIR);
+}
+
+int		f_isdir(t_file *file)
+{
+	struct stat		info;
+	int				lstatret;
+
+	if (file->path->name[file->path->nsize - 1] != '/')
+		file->path->name[file->path->nsize++] = '/';
+	ft_strcpy(file->path->name + file->path->nsize, file->name);
+	if ((lstatret = lstat(file->path->name, &info)) == -1)
+		perror("lstat");
+	if (lstatret == 0 && info.st_mode & S_IFDIR) {
+		file->nsize += file->path->nsize;
+		ft_strcpy(file->name, file->path->name);
+		return (1);
+	}
+	return (0);
+}
+
+int		read_lst(t_list *lst, t_env *env)
+{
+	t_file *file;
 
 	if (!lst)
-		return ;
-	while (*lst)
-	{
-		if ((*lst)->content)
-		{
-			file = ((t_file*)(*lst)->content);
-			ft_putendl(file->elem->d_name);
-			if (del)
-				del((void**)&(*lst)->content);
-		}
-		tmp = *lst;
-		*lst = (*lst)->next;
-		if (del)
-			del((void**)&tmp);
-	}
+		return (1);
+	file = FILEFROM(lst);
+	ft_awstrncatendl(&env->awstr, file->name, file->nsize);
+	if (lst->next)
+		read_lst(lst->next, env);
+	if (!f_isdir(file))
+		free(lst->content);
+	else if (!ft_stack_add_content(&env->dir_stack, lst->content))
+		return (0);
+	free(lst);
+	return (1);
 }
 
-void		ft_sortlst(t_list **lst, t_env *env)
-{
-	t_list			*previous;
-	t_list			*current;
-	struct dirent	*f1;
-	struct dirent	*f2;
-
-	if (!lst || !*lst || !(*lst)->content || !env)
-		return ;
-	current = *lst;
-	previous = NULL;
-	while(current->next)
-	{
-		f1 = ((t_file*)current->content)->elem;
-		if (!current || current->next->content)
-			f2 = ((t_file*)current->next->content)->elem;
-		else
-			f2 = NULL;
-		if (!f1 || !f2)
-			continue ;
-		if (env->sort_cmp_f(f1->d_name, f2->d_name, FALSE))
-		{
-			if (previous)
-			{
-				previous->next = current->next;
-				current->next = current->next->next;
-				previous->next->next = current;
-			}
-			else
-			{
-				previous = current->next;
-				current->next = previous->next;
-				previous->next = current;
-				*lst = previous;
-				previous = NULL;
-			}
-			current = *lst;
-			continue ;
-		}
-		previous = current;
-		current = current->next;
-	}
-}
-
-#define FILE_TEST "*"
-
-void		print_test(t_env *env)
+int			ft_treatdir(t_file *current_dir, t_env *env)
 {
 	t_list			*lst;
 	DIR				*dir;
+	struct dirent	*elem;
 	t_file			file;
 
-	if (env->file_list)
-		return ;
-	if (!(dir = opendir(THIS_DIR)))
+	if (!(dir = opendir(current_dir->name)))
 	{
-		ft_putstr("-ft_ls: invalid option -- '"FILE_TEST"': ");
-		ft_putendl(strerror(errno));
-		perror("opendir");
-		exit(1);
+		// printf("-ft_ls: invalid option -- '%s': ", current_dir->name);
+		// ft_putendl(strerror(errno));
+		// perror("opendir");
+		return (0);
 	}
-	while ((file.elem = readdir(dir)))
+	lst = NULL;
+	file.path = current_dir;
+	// if (current_dir->path)
+	// 	create_dirname(current_dir, current_dir->path);
+	while ((elem = readdir(dir)))
 	{
-		lstat(file.elem->d_name, &file.info);
-		if ((file.elem->d_name[0] == '.' && !(env->filters & ALL_FILES))
-			|| (!(file.info.st_mode & S_IFDIR) && env->filters & DIRECTORY))
+		if (elem->d_name[0] == '.' && !(env->filters & ALL_FILES))
 			continue ;
+		file.nsize = ft_strlen(elem->d_name);
+		ft_strcpy(file.name, elem->d_name);
 		ft_lstadd(&lst, ft_lstnew(&file, sizeof(t_file)));
-		ft_sortlst(&lst, env);
 	}
-	read_lst(&lst, ft_memdel);
+	ft_lstsort(&lst, file_cmp);
+	read_lst(lst, env);
 	closedir(dir);
+	free(current_dir);
+	return (1);
+}
+
+int			loop_recurs(t_env *env)
+{
+	t_file	*current_dir;
+
+	while(env->dir_stack.blocks_count)
+	{
+		current_dir = ft_stack_get_content(&env->dir_stack);
+		if (ft_strcmp(current_dir->name, "."))
+		{
+			ft_awstrncat(&env->awstr, current_dir->name
+						, ft_strlen(current_dir->name));
+			ft_awstrncat(&env->awstr, ":\n", 2);
+		}
+		ft_treatdir(current_dir, env);
+		if (env->dir_stack.blocks_count)
+			ft_awstrncat(&env->awstr, "\n", 1);
+	}
+	return (1);
+}
+
+int			loop_norecurs(t_env *env)
+{
 	(void)env;
+	return (0);
 }
 
 int			main(int ac, char **av)
@@ -106,9 +116,13 @@ int			main(int ac, char **av)
 	t_env	env;
 
 	init_env(&env);
-	if (ac != 1)
-		parse_arguments(&env, av + 1);
+	(void)ac;
+	parse_arguments(&env, av + 1);
+	// test_stack();
 	// print_test(&env);
-	ft_lstdel(&env.file_list, ft_memdel);
+	// test_awstr();
+	(env.filters & RECURSIVE) ? loop_recurs(&env) : loop_norecurs(&env);
+	ft_putawstr(&env.awstr);
+	// ft_lstdel(&env.file_list, ft_memdel);
 	return (0);
 }

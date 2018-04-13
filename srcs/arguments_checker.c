@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 18:14:59 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/20 21:17:13 by jerome           ###   ########.fr       */
+/*   Updated: 2018/04/13 04:08:44 by jbulant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void			check_long_option(t_env *env, t_const_buffer *arg
 	matched_indexes = 0;
 	i = -1;
 	while (++i != LONG_OPT_MAX)
-	{ 
+	{
 		if (ft_strlen(l_opt[i]) > arg->size)
 		{
 			if (ft_strnequ(arg->buffer, l_opt[i], arg->size))
@@ -77,7 +77,7 @@ void			check_long_option(t_env *env, t_const_buffer *arg
 	if (match_count != 1)
 		send_l_opt_error(arg, match_count, matched_indexes, l_opt);
 	else if (matched_indexes & REVERSE)
-		env->sort_mode |= REVERSE;
+		env->sort_mode |= matched_indexes & REVERSE;
 	else
 		env->filters |= matched_indexes;
 }
@@ -105,6 +105,20 @@ void			check_option(t_env *env, t_const_buffer *arg, t_bool *check)
 	}
 }
 
+int				add_self_to_stack(t_stack *stack)
+{
+	t_file	 *self;
+
+	if (!(self = ft_memalloc(sizeof(t_file))))
+		return (0);
+	// *(short*)self->name = *(short*)(".");
+ 	// *(short*)self->name = *(short*)("/");
+	ft_strcpy(self->name, "/Users/jbulant/");
+	self->nsize = ft_strlen(self->name);
+	ft_stack_add_content(stack, self);
+	return (1);
+}
+
 void			parse_arguments(t_env *env, char **args)
 {
 	t_const_buffer		current_arg;
@@ -128,5 +142,7 @@ void			parse_arguments(t_env *env, char **args)
 		}
 		args++;
 	}
+	if (!env->file_list)
+		add_self_to_stack(&env->dir_stack);
 	init_env_functions(env);
 }

@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/18 17:16:24 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/20 22:44:30 by jerome           ###   ########.fr       */
+/*   Updated: 2018/04/13 19:38:00 by jbulant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,17 @@
 
 #include <stdio.h>
 
+#define FILE_TEST "."
+
 # define THIS_DIR "."
 # define PARENT_DIR ".."
 
 # include <sys/stat.h>
 # include <dirent.h>
 # include "libft.h"
+# include "ft_stack.h"
 # include "ft_error.h"
+# include "ft_awstr.h"
 
 # define HELP0	"Usage: ./ft_ls [OPTION]... [FILE]...\nList information about "
 # define HELP1	"the FILEs (the current directory by default).\nSort entry alp"
@@ -57,7 +61,7 @@ typedef enum	e_ls_filter
 	ALL_FILES = (1 << 0),
 	LIST_FILES = (1 << 1),
 	DIRECTORY = (1 << 2),
-	RECURSIVE = (0 << 3)
+	RECURSIVE = (1 << 3)
 }				t_ls_filter;
 
 typedef enum	e_ls_sort
@@ -73,32 +77,59 @@ typedef struct	s_const_buffer
 	size_t	size;
 }				t_const_buffer;
 
+# define F_RIGHTS_LEN		11
+# define F_LNK_LEN			6
+# define F_MAX_NAME_LEN		256
+# define F_SIZE_LEN			20
+# define F_TIME_LEN			13
+# define F_PATH_MAX			4096
+
+# define FILEFROM(x)		((t_file*)x->content)
+# define LONGFILEFROM(x)	((t_long_file*)x->content)
+
+typedef struct	s_directory
+{
+	char	name[F_PATH_MAX];
+	int		max_len_usr;
+	int		max_len_grp;
+	int		max_len_size;
+}				t_directory;
+
 typedef struct	s_file
 {
-	struct dirent	*elem;
-	struct stat 	info;
+	void			*next;
+	struct s_file	*path;
+	size_t			nsize;
+	char			name[F_PATH_MAX];
 }				t_file;
+
+typedef struct	s_long_file
+{
+	void	*next;
+	t_file	*path;
+	size_t	nsize;
+	char	name[F_PATH_MAX];
+	char	date[F_TIME_LEN];
+	char	size[F_SIZE_LEN];
+	char	group[F_MAX_NAME_LEN];
+	char	user[F_MAX_NAME_LEN];
+	char	nlink[F_LNK_LEN];
+	char	rights[F_RIGHTS_LEN];
+}				t_long_file;
 
 # define MAX_DIR_STACK 128
 
-typedef struct	s_dir_stack
-{
-	struct t_dirent		*files[MAX_DIR_STACK];
-	t_bool				delete_me;
-	size_t				size;
-	struct s_dir_stack	*next;
-}				t_dir_stack;
-
 typedef struct	s_env
 {
-	t_dir_stack	dir_stack;
+	t_stack		dir_stack;
+	t_awstr		awstr;
 	t_list		*file_list;
 	t_ls_filter	filters;
 	t_ls_sort	sort_mode;
 	t_bool		(*sort_cmp_f)();
 }				t_env;
 
-void			init_env(t_env *env);
+int			init_env(t_env *env);
 void			parse_arguments(t_env *env, char **args);
 void			init_env_functions(t_env *env);
 

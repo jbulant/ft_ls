@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbulant <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: jbulant <jbulant@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/07 16:11:45 by jbulant           #+#    #+#             */
-/*   Updated: 2018/03/20 20:03:04 by jerome           ###   ########.fr       */
+/*   Updated: 2018/04/10 00:21:18 by jbulant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void					ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list					*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 void					ft_lstappend(t_list **alst, t_list *new);
 void					ft_lstjoin(t_list **alst, t_list *new);
+void					ft_lstsort(t_list **head, int (*cmp)());
 char					**ft_arstrnew(size_t size);
 size_t					ft_count_words(const char *str, char seperator);
 size_t					ft_strclen(const char *str, char c);

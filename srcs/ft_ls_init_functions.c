@@ -6,7 +6,7 @@
 /*   By: jerome <jerome@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 21:13:19 by jerome            #+#    #+#             */
-/*   Updated: 2018/03/20 21:38:55 by jerome           ###   ########.fr       */
+/*   Updated: 2018/04/11 04:34:51 by jbulant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,10 @@ void		init_env_functions(t_env *env)
 	env->sort_cmp_f = scmpf[env->sort_mode];
 }
 
-void		init_env(t_env *env)
+int			init_env(t_env *env)
 {
-	env->file_list = NULL;
-	env->sort_mode = 0;
-	env->filters = NO_FILTER;
+	ft_bzero(env, sizeof(t_env));
+	if (!ft_stack_init(&env->dir_stack, MAX_DIR_STACK))
+		return (0);
+	return (1);
 }

@@ -1,18 +1,19 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jbulant <marvin@42.fr>                     +#+  +:+       +#+         #
+#    By: jbulant <jbulant@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/07 16:49:28 by jbulant           #+#    #+#              #
-#    Updated: 2018/03/20 22:47:23 by jerome           ###   ########.fr        #
+#    Updated: 2018/04/09 23:03:19 by jbulant          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME = libft.a
 
-DEBUG = 1
+LINUX = 0
+DEBUG = 0
 
 HEADERS_NAME = libft.h
 
@@ -80,6 +81,7 @@ SRCS_NAME = \
 			ft_lstmap.c \
 			ft_lstjoin.c \
 			ft_lstappend.c \
+			ft_lstsort.c \
 			ft_arstrnew.c \
 			ft_count_words.c \
 			ft_strclen.c \
@@ -113,7 +115,8 @@ HEADERS = $(addprefix $(HEADERS_PATH), $(HEADERS_NAME))
 CC = gcc
 INCLUDES = -Iincludes
 CFLAGS = -Wall -Wextra -Werror
-DEBUGFLAGS = -fsanitize=address -lasan -g3
+DEBUGFLAGS = -fsanitize=address -g3
+#DEBUGFLAGS = -fsanitize=address -lasan -g3
 
 .PHONY: all clean fclean re
 
