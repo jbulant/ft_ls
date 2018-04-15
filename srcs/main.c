@@ -26,7 +26,7 @@ int		f_isdir(t_file *file)
 	ft_strcpy(file->path->name + file->path->nsize, file->name);
 	if ((lstatret = lstat(file->path->name, &info)) == -1)
 		perror("lstat");
-	if (lstatret == 0 && info.st_mode & S_IFDIR) {
+	if (lstatret == 0 && info.st_mode & S_IFDIR && ft_strcmp(file->name, ".") && ft_strcmp(file->name, "..")) {
 		file->nsize += file->path->nsize;
 		ft_strcpy(file->name, file->path->name);
 		return (1);
@@ -34,27 +34,24 @@ int		f_isdir(t_file *file)
 	return (0);
 }
 
-int		read_lst(t_list *lst, t_env *env)
+int		read_lst(t_file *flst, t_env *env)
 {
-	t_file *file;
-
-	if (!lst)
+	if (!flst)
 		return (1);
-	file = FILEFROM(lst);
-	ft_awstrncatendl(&env->awstr, file->name, file->nsize);
-	if (lst->next)
-		read_lst(lst->next, env);
-	if (!f_isdir(file))
-		free(lst->content);
-	else if (!ft_stack_add_content(&env->dir_stack, lst->content))
+	ft_awstrncatendl(&env->awstr, flst->name, flst->nsize);
+	if (flst->next)
+		read_lst(flst->next, env);
+	if (!f_isdir(flst))
+		free(flst);
+	else if (!ft_stack_add_content(&env->dir_stack, flst))
 		return (0);
-	free(lst);
 	return (1);
 }
 
 int			ft_treatdir(t_file *current_dir, t_env *env)
 {
-	t_list			*lst;
+  //	t_list			*lst;
+	t_file			*flst;
 	DIR				*dir;
 	struct dirent	*elem;
 	t_file			file;
@@ -66,7 +63,8 @@ int			ft_treatdir(t_file *current_dir, t_env *env)
 		// perror("opendir");
 		return (0);
 	}
-	lst = NULL;
+	flst = NULL;
+	//	lst = NULL;
 	file.path = current_dir;
 	// if (current_dir->path)
 	// 	create_dirname(current_dir, current_dir->path);
@@ -76,10 +74,11 @@ int			ft_treatdir(t_file *current_dir, t_env *env)
 			continue ;
 		file.nsize = ft_strlen(elem->d_name);
 		ft_strcpy(file.name, elem->d_name);
-		ft_lstadd(&lst, ft_lstnew(&file, sizeof(t_file)));
+		flst_add(&flst, flstdup(&file));
+		//	ft_lstadd(&lst, ft_lstnew(&file, sizeof(t_file)));
 	}
-	ft_lstsort(&lst, file_cmp);
-	read_lst(lst, env);
+	//	ft_lstsort(&lst, file_cmp);
+	read_lst(flst, env);
 	closedir(dir);
 	free(current_dir);
 	return (1);

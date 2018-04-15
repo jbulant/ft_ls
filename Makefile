@@ -17,7 +17,8 @@ SRCS_NAME = main.c \
 			sort_cmp_functions.c \
 			ft_ls_init_functions.c \
 			ft_stack.c \
-			ft_awstr.c
+			ft_awstr.c \
+			ft_flst.c
 
 SRCS = $(addprefix $(SRCSDIR),$(SRCS_NAME))
 OBJS = $(addprefix $(OBJDIR),$(SRCS_NAME:.c=.o))

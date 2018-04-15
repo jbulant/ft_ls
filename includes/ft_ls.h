@@ -117,6 +117,11 @@ typedef struct	s_long_file
 	char	rights[F_RIGHTS_LEN];
 }				t_long_file;
 
+t_file			*new_flst(void);
+t_file			*flstdup(t_file *src);
+t_long_file		*new_lflst(void);
+void			flst_add(t_file **aflst, t_file *new);
+
 # define MAX_DIR_STACK 128
 
 typedef struct	s_env
